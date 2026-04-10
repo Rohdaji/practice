@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Pwnable Stack Calculator</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e1e; color: #d4d4d4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background-color: #252526; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 400px; }
+        h2 { color: #569cd6; text-align: center; margin-top: 0; }
+        .input-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #9cdcfe; }
+        input { width: 100%; padding: 10px; border: 1px solid #3c3c3c; background-color: #3c3c3c; color: #ffffff; border-radius: 4px; box-sizing: border-box; font-family: monospace; }
+        button { width: 100%; padding: 12px; border: none; background-color: #007acc; color: white; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #0062a3; }
+        #result { margin-top: 1.5rem; padding: 1rem; background-color: #2d2d2d; border-radius: 4px; border-left: 4px solid #6a9955; }
+        .val { color: #ce9178; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Stack Calc 💻</h2>
+    <div class="input-group">
+        <label>RSP (High Address - Top of Stack)</label>
+        <input type="text" id="rsp" placeholder="0x7fff261ff8d8">
+    </div>
+    <div class="input-group">
+        <label>RBP (Low Address - Base Pointer)</label>
+        <input type="text" id="rbp" placeholder="0x7fff261ff910">
+    </div>
+    <button onclick="calculate()">크기 계산하기</button>
+
+    <div id="result" style="display: none;">
+        <div>스택 프레임 크기 (RBP - RSP):</div>
+        <div style="margin-top: 5px;">
+            <span class="val" id="decResult"></span> Bytes (10진수)<br>
+            <span class="val" id="hexResult"></span> (16진수)
+        </div>
+        <hr style="border: 0.5px solid #444; margin: 10px 0;">
+        <div style="font-size: 0.85rem; color: #888;">
+            * RET까지의 거리(x64): <span id="retDist"></span> Bytes<br>
+            (RBP-RSP + 8 bytes)
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const rspVal = document.getElementById('rsp').value.trim();
+        const rbpVal = document.getElementById('rbp').value.trim();
+
+        if(!rspVal || !rbpVal) {
+            alert("주소 값을 입력해주세요!");
+            return;
+        }
+
+        try {
+            const rsp = BigInt(rspVal);
+            const rbp = BigInt(rbpVal);
+            
+            const diff = rbp - rsp;
+            
+            document.getElementById('decResult').innerText = diff.toString();
+            document.getElementById('hexResult').innerText = "0x" + diff.toString(16).toUpperCase();
+            document.getElementById('retDist').innerText = (diff + 8n).toString();
+            
+            document.getElementById('result').style.display = 'block';
+        } catch (e) {
+            alert("올바른 16진수 형식(0x...)으로 입력해주세요.");
+        }
+    }
+</script>
+
+</body>
+</html>
